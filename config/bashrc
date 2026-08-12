@@ -1,0 +1,38 @@
+# ~/.bashrc: executed by bash(1) for non-login shells.
+
+# Note: PS1 and umask are already set in /etc/profile. You should not
+# need this unless you want different defaults for root.
+# PS1='${debian_chroot:+($debian_chroot)}\h:\w\$ '
+# umask 022
+
+# You may uncomment the following lines if you want `ls' to be colorized:
+export LS_OPTIONS='--color=auto'
+eval "$(dircolors)"
+alias ls='ls $LS_OPTIONS'
+alias ll='ls $LS_OPTIONS -l'
+alias l='ls $LS_OPTIONS -lA'
+
+# Force load cluster env even in non-interactive shells
+if [ -f /etc/profile ]; then
+  source /etc/profile
+fi
+
+# ==============================================================================
+# Java, Hadoop, and Spark Environment Setup
+# ==============================================================================
+
+# Java Environment
+export JAVA_HOME=/mnt/cluster/jdk
+export PATH="$JAVA_HOME/bin:$PATH"
+
+# Hadoop & YARN Environment
+export HADOOP_HOME=/mnt/cluster/hadoop/current
+export HADOOP_CONF_DIR="$HADOOP_HOME/etc/hadoop"
+export YARN_CONF_DIR="$HADOOP_CONF_DIR"
+export PATH="$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH"
+
+# Spark Environment
+export SPARK_HOME=/mnt/cluster/spark/current
+export PATH="$SPARK_HOME/bin:$PATH"
+
+export LD_LIBRARY_PATH=$HADOOP_HOME/lib/native:$LD_LIBRARY_PATH
