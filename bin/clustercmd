@@ -1,0 +1,4 @@
+#!/bin/bash
+# run command on each node of the cluster
+for pi in $(/srv/bin/otherpis); do ssh $pi "$@"; done
+$@

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+
+HADOOP_HOME=/mnt/cluster/hadoop/current
+SPARK_HOME=/mnt/cluster/spark/current
+
+echo "[Cluster] Stopping all services..."
+
+$SPARK_HOME/sbin/stop-workers.sh >/dev/null 2>&1
+$SPARK_HOME/sbin/stop-master.sh >/dev/null 2>&1
+
+$HADOOP_HOME/sbin/stop-yarn.sh >/dev/null 2>&1
+$HADOOP_HOME/sbin/stop-dfs.sh >/dev/null 2>&1
+
+sleep 2
+echo "[Cluster] Reboot"
+/srv/bin/clustercmd sudo shutdown -r now

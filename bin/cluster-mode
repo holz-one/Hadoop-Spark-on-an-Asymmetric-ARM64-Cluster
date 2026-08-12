@@ -1,0 +1,135 @@
+#!/bin/bash
+
+# =========================
+# Config
+# =========================
+MODE=$1
+
+HADOOP_HOME=/mnt/cluster/hadoop/current
+SPARK_HOME=/mnt/cluster/spark/current
+
+LOG_PREFIX="[CLUSTER]"
+
+# =========================
+# Helpers
+# =========================
+log() {
+  echo "$LOG_PREFIX $1"
+}
+
+die() {
+  echo "$LOG_PREFIX ERROR: $1"
+  exit 1
+}
+
+require_arg() {
+  if [[ -z "$MODE" ]]; then
+    die "Usage: cluster-mode.sh [hadoop|spark]"
+  fi
+}
+
+stop_all() {
+  log "Stopping all services..."
+
+  $SPARK_HOME/sbin/stop-workers.sh >/dev/null 2>&1
+  $SPARK_HOME/sbin/stop-master.sh >/dev/null 2>&1
+
+  $HADOOP_HOME/sbin/stop-yarn.sh >/dev/null 2>&1
+  $HADOOP_HOME/sbin/stop-dfs.sh >/dev/null 2>&1
+
+  sleep 2
+}
+
+# +++++++++++++++++++++++++
+# HDFS 
+# +++++++++++++++++++++++++
+start_dfs() {
+  log "Starting HDFS..."
+  $HADOOP_HOME/sbin/start-dfs.sh || die "DFS failed"
+  log "Waiting for HDFS..."
+  until hdfs dfsadmin -report | grep -q "Live datanodes"; do
+     sleep 2
+  done
+
+  hdfs dfsadmin -safemode leave
+
+}
+
+# =========================
+# Hadoop Mode
+# =========================
+start_hadoop_mode() {
+  log "Starting Hadoop mode..."
+  start_dfs
+  export CLUSTER_MODE=hadoop
+
+  $HADOOP_HOME/sbin/start-yarn.sh || die "YARN failed"
+
+  log "Hadoop mode started"
+}
+
+# =========================
+# Spark Mode
+# =========================
+start_spark_mode() {
+  log "Starting Spark standalone mode..."
+  #start_dfs
+  export CLUSTER_MODE=spark
+
+  $HADOOP_HOME/sbin/start-yarn.sh || die "YARN failed"
+  $SPARK_HOME/sbin/start-master.sh || die "Spark master failed"
+  $SPARK_HOME/sbin/start-workers.sh || die "Spark workers failed"
+
+  log "Spark standalone started"
+}
+
+
+
+# =========================
+# Status
+# =========================
+status() {
+  log "Cluster status:"
+  echo "--------------------"
+  hostname
+  echo "--------------------"
+  jps
+  for x in $(otherpis)
+  do
+   echo "--------------------"
+   echo $x
+   echo "--------------------"
+   ssh dietpi@$x jps
+  done
+}
+
+# =========================
+# Main
+# =========================
+require_arg
+
+case "$MODE" in
+  hadoop)
+
+    stop_all
+    clustercmd set_cluster_mode $MODE
+    start_hadoop_mode
+    ;;
+  spark)
+    stop_all
+    clustercmd set_cluster_mode $MODE
+    start_spark_mode
+    ;;
+  status)
+    status
+    exit 0
+    ;;
+  stop)
+    stop_all
+    ;;
+  *)
+    die "Invalid mode: $MODE"
+    ;;
+esac
+
+status

@@ -1,0 +1,11 @@
+#!/bin/bash
+if [ ! -d $1 ]
+then
+ echo -e "$1 is not a directory"
+ exit 2
+fi
+
+for pi in $(otherpis) 
+do 
+	rsync -avxP $1 $pi:$(dirname $1)/
+done

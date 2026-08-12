@@ -1,0 +1,5 @@
+#!/bin/bash
+# copy files to the other cluster nodes
+for pi in $(otherpis); do
+  cat $1 | ssh $pi "sudo tee $1" > /dev/null 2>&1
+done

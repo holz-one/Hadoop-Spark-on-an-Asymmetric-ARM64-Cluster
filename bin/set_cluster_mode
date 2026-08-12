@@ -1,0 +1,6 @@
+#!/bin/bash
+if [ "$1" == "spark" ] || [ "$1" == "hadoop" ]
+then
+	echo "$1" > /mnt/cluster/.cluster_mode
+    #	source /etc/profile.d/cluster.sh
+fi
