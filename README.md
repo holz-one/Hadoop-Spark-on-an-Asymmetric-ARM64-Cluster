@@ -19,7 +19,11 @@ Running Spark on YARN allows this heterogeneous hardware to effectively distribu
 While this setup serves as a functional proof-of-concept for edge computing and local development, it revealed critical power supply limitations under heavy storage workloads:
 
 * **Power Delivery Issue:** An adapted HP Pavilion desktop PSU was used to power the system, stepping down voltage using an adapter from the 12 volt P4 connector to a buck converter with a **5A maximum output**.
-* **Storage Bottleneck:** When attempting to run multiple external drives continuously on the Orange Pi 5 Plus, the 5A buck converter could not handle the sustained power draw, leading to under-voltage instability. Drives didn't mount on boot, they required an amp of current each. The usb hub on the front isn't working well on usb3 drives, but great for peripherals on usb2 it's also powered using a sata power to barrel connector. 2 usb c charging ports are also connected to buck converters from 12 volts line to 5 volts with 2-3 amps max. **LCD Display** takes 12 volt at 3 amps, it's originally from a pinebook pro that broke at the hinges. 2 fans have also been mounted inside and powered with a sata power connector.
+* **Storage Bottleneck:** When attempting to run multiple external drives continuously on the Orange Pi 5 Plus, the 5A buck converter could not handle the sustained power draw, leading to under-voltage instability. 
+* **Drives** didn't mount on boot, they required an amp of current each. 
+* **The usb hub** on the front isn't working well on usb3 drives, but great for peripherals on usb2 it's also powered using a sata power to barrel connector. 
+* **2 usb c charging ports** are also connected to buck converters from 12 volts line to 5 volts with 2-3 amps max.
+* **LCD Display:** takes 12 volt at 3 amps, it's originally from a pinebook pro that broke at the hinges. 2 fans have also been mounted inside and powered with a sata power connector.
 
 ---
 
